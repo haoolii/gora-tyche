@@ -1,12 +1,14 @@
 .task {
   display: flex;
   height: 50px;
+  border-bottom: 1px solid black;
 }
 
 .task-name {
-  width: 300px;
+  max-width: 300px;
+  flex: 1;
 }
 
-.task-timeline {
+.task-gantt {
   flex: 1;
 }

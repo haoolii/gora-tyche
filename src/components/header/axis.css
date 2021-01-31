@@ -1,3 +1,9 @@
 .axis {
+  position: relative;
   flex: 1;
+  height: 65px;
+}
+.axis svg {
+  position: absolute;
+  bottom: 0;
 }
