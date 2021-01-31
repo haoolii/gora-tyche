@@ -1,0 +1,5 @@
+.gora {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}

@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  background: #276EF1;
+  height: 85px;
+}
+
+.header .title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  color: white;
+}
