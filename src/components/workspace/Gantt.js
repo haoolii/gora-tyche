@@ -15,6 +15,8 @@ export class Gantt extends React.Component {
     this.el = React.createRef();
     this.svgEl = React.createRef();
     this.rectEl = React.createRef();
+    this.rectLeftEl = React.createRef();
+    this.rectRightEl = React.createRef();
   }
 
   updateSize() {
@@ -29,13 +31,20 @@ export class Gantt extends React.Component {
     window.addEventListener('resize', () => this.updateSize());
     this.updateSize();
 
-    d3.select(this.el.current)
-      .select('rect')
+    d3.select(this.rectEl.current)
       .call(
         d3.drag()
-          .on('start', event => {})
-          // .on('end', event => this.drag(event))
           .on('drag', event => this.drag(event))
+      )
+    d3.select(this.rectLeftEl.current)
+      .call(
+        d3.drag()
+          .on('drag', event => this.grabLeftdrag(event))
+      )
+    d3.select(this.rectRightEl.current)
+      .call(
+        d3.drag()
+          .on('drag', event => this.grabRightdrag(event))
       )
   }
 
@@ -48,7 +57,32 @@ export class Gantt extends React.Component {
       start: scale.invert(targetX),
       end: new Date(new Date(scale.invert(targetX)).getTime() + duration)
     })
-    
+  }
+
+  grabLeftdrag(event) {
+    const { end, onChange } = this.props;
+    const { scale } = this.state;
+    const newStart = scale.invert(event.x);
+
+    if (scale(end) - scale(newStart) < 10) return;
+
+    onChange({
+      start: newStart,
+      end: end
+    })
+  }
+
+  grabRightdrag(event) {
+    const { start, onChange } = this.props;
+    const { scale } = this.state;
+    const newEnd = scale.invert(event.x);
+
+    if (scale(newEnd) - scale(start) < 10) return;
+
+    onChange({
+      start: start,
+      end: scale.invert(event.x)
+    })
   }
 
   componentWillUnmount() {
@@ -100,9 +134,29 @@ export class Gantt extends React.Component {
           ref={this.rectEl}
           x={`${this.state.ganttPosition[0]}`}
           y={`${this.state.ganttPosition[1]}`}
+          cursor="move"
           width={`${this.state.ganttWidth}`} height="50" fill="red"
-        >
-        </rect>
+        />
+        <rect
+          className="grabbar"
+          x={`${this.state.ganttPosition[0]}`}
+          y={`${this.state.ganttPosition[1]}`}
+          width="4"
+          fill="blue"
+          height="50"
+          cursor="ew-resize"
+          ref={this.rectLeftEl}
+        />
+        <rect
+        className="grabbar"
+          x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 4}`}
+          y={`${this.state.ganttPosition[1]}`}
+          width="4"
+          cursor="ew-resize"
+          fill="blue"
+          height="50"
+          ref={this.rectRightEl}
+        />
       </svg>
     </div>
     );
