@@ -7,9 +7,10 @@ export const Task = ({
   taskName,
   start,
   end,
-  onChange
+  onChange,
+  isDragged,
+  isSelected
 }) => {
-  
   const handleChange = (e) => {
     onChange({
       id,
@@ -19,7 +20,13 @@ export const Task = ({
     })
   }
   return (
-    <div className="task">
+    <div 
+      className={
+      `
+      task
+      ${isDragged ? 'isDragged': ''}
+      ${isSelected ? 'isSelected': ''}
+      `}>
       <div className="task-name" data-movable-handle>{ taskName }</div>
       <div className="task-gantt">
         <Gantt

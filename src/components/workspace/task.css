@@ -4,6 +4,13 @@
   border-bottom: 1px solid black;
 }
 
+.task.isDragged {
+  cursor: grabbing;
+}
+.task.isSelected {
+  border: 1px solid red;
+}
+
 .task-name {
   max-width: 300px;
   flex: 1;
@@ -12,3 +19,5 @@
 .task-gantt {
   flex: 1;
 }
+
+

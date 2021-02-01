@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, Fragment } from 'react'
 import { Task } from './Task';
 import './workspace.css';
 import { List, arrayMove } from 'react-movable';
@@ -37,17 +37,22 @@ export const Workspace = () => {
           onChange={({ oldIndex, newIndex }) =>
             setTasks(arrayMove(tasks, oldIndex, newIndex))
           }
+          lockVertically
           renderList={({ children, props }) => <ul {...props}>{children}</ul>}
-          renderItem={({ value, props }) => <li {...props}>
-            <Task
-              id={value.id}
-              onChange={handleChange}
-              key={value.id}
-              taskName={value.taskName}
-              start={value.start}
-              end={value.end}
-            />
-          </li>}
+          renderItem={({ value, props, isDragged, isSelected  }) =>
+            <div {...props}>
+              <Task
+                id={value.id}
+                onChange={handleChange}
+                key={value.id}
+                taskName={value.taskName}
+                start={value.start}
+                end={value.end}
+                isDragged={isDragged}
+                isSelected={isSelected}
+              />
+            </div>
+          }
         />
           {/* {
             tasks.map((task, index) => <

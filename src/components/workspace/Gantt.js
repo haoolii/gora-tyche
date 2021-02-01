@@ -20,11 +20,13 @@ export class Gantt extends React.Component {
   }
 
   updateSize() {
-    const svgWidth = this.el.current.getBoundingClientRect().width;
-    this.setState({
-      svgWidth,
-      scale: this.getScale(svgWidth)
-    })
+    if (this.el.current) {
+      const svgWidth = this.el.current.getBoundingClientRect().width;
+      this.setState({
+        svgWidth,
+        scale: this.getScale(svgWidth)
+      })
+    }
   }
 
   componentDidMount() {
