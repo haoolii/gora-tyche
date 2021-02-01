@@ -19,7 +19,7 @@ export const Axis = () => {
     const x = d3.scaleTime()
                 .domain([new Date('2021/01/01'), new Date('2021/12/31')])
                 .range([0, svgWidth]);
-    const aixs = d3.axisTop(x);
+    const aixs = d3.axisTop(x).tickSize(-100)
     d3.select(el.current)
       .select('g')
       .call(aixs)
