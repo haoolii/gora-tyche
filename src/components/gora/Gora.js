@@ -3,6 +3,7 @@ import { styled } from 'styletron-react';
 import { Layout } from './Layout';
 import { WorkSpace } from './WorkSpace';
 import { Toolbar } from './Toolbar';
+import { motion } from "framer-motion"
 
 const GoraBase = styled('div', { 
   className: 'gora',
@@ -87,21 +88,31 @@ export const Gora = () => {
   }
 
   return (
-    <GoraBase>
-      <Main>
-        <Layout />
-        <WorkSpace
-          tasks={tasks}
-          setTasks={setTasks}
-          handleChange={handleChange}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        />
-      </Main>
-      <Footer>
-        <Toolbar loading={loading} onCreate={handleCreate}/>
-      </Footer>
-    </GoraBase>
+    <motion.div 
+      initial={{ rotate: 90, scale: 0 }}
+      animate={{ rotate: 0, scale: 1 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 20
+      }}
+    >
+      <GoraBase>
+        <Main>
+          <Layout />
+          <WorkSpace
+            tasks={tasks}
+            setTasks={setTasks}
+            handleChange={handleChange}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
+        </Main>
+        <Footer>
+          <Toolbar loading={loading} onCreate={handleCreate}/>
+        </Footer>
+      </GoraBase>
+    </motion.div>
   )
 }
 

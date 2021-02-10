@@ -1,9 +1,16 @@
 import React from 'react'
 import * as d3 from 'd3';
 import { styled } from 'styletron-react';
-
+import { motion } from "framer-motion"
+{/* <motion.div
+  whileHover={{ scale: 1.2, rotate: 90 }}
+  whileTap={{
+    scale: 0.8,
+    rotate: -90,
+    borderRadius: "100%"
+  }}
+/> */}
 const GanttBase = styled('div', {
-  className: 'ganttBase',
   height: '50px'
 })
 
@@ -27,8 +34,8 @@ export class Gantt extends React.Component {
   updateSize() {
     if (this.el.current) {
       this.setState({
-        svgWidth: this.el.current.getBoundingClientRect().width,
-        scale: this.getScale(this.el.current.getBoundingClientRect().width)
+        svgWidth: 760,
+        scale: this.getScale(760)
       })
     }
   }
@@ -132,46 +139,50 @@ export class Gantt extends React.Component {
 
   render() {
     return (
-    <GanttBase ref={this.el}>
-      <svg
-        ref={this.svgEl}
-        width={this.state.svgWidth}
-        height={50}
-        viewBox={`0 0 ${this.state.svgWidth} 50`}
-      >
-        <g >
-          <rect
-            ref={this.rectEl}
-            x={`${this.state.ganttPosition[0]}`}
-            y={`${this.state.ganttPosition[1] + 12}`}
-            cursor="move"
-            width={`${this.state.ganttWidth}`} height="26" fill={this.state.ganttColor}
-            rx="14"
-          />
-          <rect
-            className="grabbar"
-            x={`${this.state.ganttPosition[0]}`}
-            y={`${this.state.ganttPosition[1] + 12}`}
-            width="8"
-            fillOpacity="0"
-            height="26"
-            cursor="ew-resize"
-            ref={this.rectLeftEl}
-          />
-          <rect
-            className="grabbar"
-            x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 8}`}
-            y={`${this.state.ganttPosition[1] + 12}`}
-            width="8"
-            cursor="ew-resize"
-            fillOpacity="0"
-            height="26"
-            ref={this.rectRightEl}
+      <motion.div
+        whileHover={{ opacity: 0.7 }}
+        whileTap={{ opacity: 0.7 }}>
+        <GanttBase ref={this.el}>
+          <svg
+            ref={this.svgEl}
+            width={this.state.svgWidth}
+            height={50}
+            viewBox={`0 0 ${this.state.svgWidth} 50`}
+          >
+            <g> 
+              <rect
+                ref={this.rectEl}
+                x={`${this.state.ganttPosition[0]}`}
+                y={`${this.state.ganttPosition[1] + 12}`}
+                cursor="move"
+                width={`${this.state.ganttWidth}`} height="26" fill={this.state.ganttColor}
+                rx="14"
+              />
+              <rect
+                className="grabbar"
+                x={`${this.state.ganttPosition[0]}`}
+                y={`${this.state.ganttPosition[1] + 12}`}
+                width="8"
+                fillOpacity="0"
+                height="26"
+                cursor="ew-resize"
+                ref={this.rectLeftEl}
+              />
+              <rect
+                className="grabbar"
+                x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 8}`}
+                y={`${this.state.ganttPosition[1] + 12}`}
+                width="8"
+                cursor="ew-resize"
+                fillOpacity="0"
+                height="26"
+                ref={this.rectRightEl}
 
-          />
-        </g>
-      </svg>
-    </GanttBase>
+              />
+            </g>
+          </svg>
+        </GanttBase>
+        </motion.div>
     );
   }
 }
