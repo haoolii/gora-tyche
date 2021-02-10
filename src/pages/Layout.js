@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
   Route,
   Link
@@ -68,19 +68,19 @@ export const Layout = () => {
           </div>
       </HeaderNavigation>
 
-        <LayerContainer>
-          <Switch>
-              <Route exact path="/">
-                <Gora />
-              </Route>
-              <Route path="/about">
-                <h1>About</h1>
-              </Route>
-              <Route path="/dashboard">
-              <h1>Dashboard</h1>
-              </Route>
-          </Switch>
-        </LayerContainer>
+      <LayerContainer>
+        <Switch>
+            <Route exact path="/">
+              <Gora />
+            </Route>
+            <Route path="/about">
+              <h1>About</h1>
+            </Route>
+            <Route path="/dashboard">
+            <h1>Dashboard</h1>
+            </Route>
+        </Switch>
+      </LayerContainer>
 
     </Router>
   )
