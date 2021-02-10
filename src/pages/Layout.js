@@ -30,7 +30,7 @@ const Footer = styled('div', {
 const LayerContainer = styled('div', {
   display: 'flex',
   justifyContent: 'center',
-  paddingTop: '80px',
+  paddingTop: '40px',
   width: '100%',
   maxWidth: '1480px',
   width: '100%',
@@ -82,11 +82,6 @@ export const Layout = () => {
           </Switch>
         </LayerContainer>
 
-        <Footer className={css({
-          background: theme.colors.primary100
-        })}>
-          Gora
-        </Footer>
     </Router>
   )
 }

@@ -6,14 +6,17 @@ import {
   Grab,
   Overflow
 } from 'baseui/icon';
-import { Button, KIND, SIZE } from 'baseui/button';
+import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
+import { LabelMedium, LabelSmall } from 'baseui/typography';
+import { TaskModal } from './TaskModal';
 
 const TaskBase = styled('div', {
   className: 'task',
   display: 'flex',
   width: '100%',
   height: '50px',
-  borderBottom: '2px solid #eee',
+  borderTop: '1px solid #eee',
+  borderBottom: '1px solid #eee',
   zIndex: -1
 })
 
@@ -38,38 +41,58 @@ const TaskTitle = styled('div', {
 
 const TaskMore = styled('div')
 
-
 const TaskGantt = styled('div', {
   className: 'taskGantt',
   width: '760px',
   height: '50px'
 })
 
+const TaskColor = styled('div', props => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  opacity: 0.2,
+  background: props.$taskColor ? props.$taskColor : 'none',
+  width: '100%',
+  height: '100%',
+  zIndex: -1
+}))
+
 export const Task = ({
   id,
   title,
   start,
   end,
-  onChange
+  onChange,
+  ganttColor,
+  taskColor,
+  onEdit,
+  onDelete
 }) => {
   const handleChange = event => {
     onChange({
       id,
       title,
+      ganttColor,
+      taskColor,
       ...event
     })
   }
+  const [isOpen, setIsOpen] = useState(false);
   return (
+    <>
     <TaskBase>
       <TaskInfo>
-        <TaskGrab>
-          <Grab data-movable-handle color="#707070" size={16}/>
+        <TaskGrab data-movable-handle>
+          <Grab color="#707070" size={16}/>
         </TaskGrab>
         <TaskTitle>
-          {title}
+          <LabelSmall>
+            {title}
+          </LabelSmall>
         </TaskTitle>
         <TaskMore>
-          <Button kind={KIND.minimal} size={SIZE.compact}>
+          <Button kind={KIND.minimal} size={SIZE.compact} shape={SHAPE.circle} onClick={() => setIsOpen(true)}>
             <Overflow color="#707070" size={16}/>
           </Button>
         </TaskMore>
@@ -80,9 +103,27 @@ export const Task = ({
           start={start}
           end={end}
           onChange={handleChange}
+          ganttColor={ganttColor}
         ></Gantt>
       </TaskGantt>
+      <TaskColor $taskColor={taskColor}></TaskColor>
     </TaskBase>
+    <TaskModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        onSubmit={onEdit}
+        onDelete={onDelete}
+        task={{
+          id,
+          title,
+          start,
+          end,
+          onChange,
+          ganttColor,
+          taskColor,
+        }}
+      />
+    </>
   )
 }
 

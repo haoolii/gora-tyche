@@ -14,7 +14,8 @@ export class Gantt extends React.Component {
       svgWidth: 0,
       ganttWidth: 0,
       ganttPosition: [0, 0],
-      scale: () => {}
+      scale: () => {},
+      ganttColor: props.ganttColor ? props.ganttColor : '#333333'
     }
     this.el = React.createRef();
     this.svgEl = React.createRef();
@@ -103,17 +104,23 @@ export class Gantt extends React.Component {
     if (preProps.end !== this.props.end) {
       this.updateGantt();
     }
+
+    if (preProps.ganttColor !== this.props.ganttColor) {
+      this.updateGantt();
+    }
+    
   }
 
   updateGantt() {
     const { scale } = this.state;
-    const { start, end } = this.props;
+    const { start, end, ganttColor } = this.props;
     this.setState({
       ganttPosition: [
         scale(this.props.start),
         0
       ],
-      ganttWidth: Math.abs(scale(end) - scale(start))
+      ganttWidth: Math.abs(scale(end) - scale(start)),
+      ganttColor
     })
   }
 
@@ -138,7 +145,7 @@ export class Gantt extends React.Component {
             x={`${this.state.ganttPosition[0]}`}
             y={`${this.state.ganttPosition[1] + 12}`}
             cursor="move"
-            width={`${this.state.ganttWidth}`} height="26" fill="#FC5656"
+            width={`${this.state.ganttWidth}`} height="26" fill={this.state.ganttColor}
             rx="14"
           />
           <rect

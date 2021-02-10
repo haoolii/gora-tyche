@@ -1,7 +1,7 @@
 import React from 'react'
 import { styled } from 'styletron-react';
 import { Axis } from './Axis';
-
+import {HeadingXSmall, LabelLarge} from 'baseui/typography';
 const LayoutBase = styled('div', {
   className: 'layoutBase',
   position: 'absolute',
@@ -26,7 +26,7 @@ const Title = styled('div', {
   height: '50px',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  padding: '0 22px',
   borderBottom: '2px solid #eee',
   boxSizing: 'border-box'
 })
@@ -36,7 +36,7 @@ export const Layout = () => {
     <LayoutBase>
       <Info>
         <Title>
-          <h3>測試用Gora</h3>
+          <HeadingXSmall>GORA-PLAN</HeadingXSmall>
         </Title>
       </Info>
       <Axis width={760} height={600}/>
