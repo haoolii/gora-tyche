@@ -16,7 +16,7 @@ import { StyledLink } from "baseui/link";
 import { Button } from "baseui/button";
 import { useStyletron, styled } from 'baseui';
 import { Gora } from '../components'
-
+import { MonoDisplayXSmall } from 'baseui/typography';
 
 const Footer = styled('div', {
   display: 'flex',
@@ -35,7 +35,6 @@ const LayerContainer = styled('div', {
   maxWidth: '1480px',
   width: '100%',
   margin: '0 auto',
-  minHeight: 'calc(100vh - 124px)'
 })
 
 export const Layout = () => {
@@ -74,7 +73,17 @@ export const Layout = () => {
               <Gora />
             </Route>
             <Route path="/about">
-              <h1>About</h1>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <MonoDisplayXSmall marginBottom="scale800">
+                  Gora is a Gantt chart for business.
+                </MonoDisplayXSmall>
+                <MonoDisplayXSmall marginBottom="scale800">
+                  Easy and fast to generate the Gantt chart!!
+                </MonoDisplayXSmall>
+                <MonoDisplayXSmall marginBottom="scale800">
+                  Easy attract customers attention!!
+                </MonoDisplayXSmall>
+              </div>
             </Route>
             <Route path="/dashboard">
             <h1>Dashboard</h1>
