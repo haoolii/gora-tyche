@@ -8,7 +8,9 @@ import { TaskModal } from './TaskModal';
 const ToolbarBase = styled('div', {
   width: '960px',
   height: '50px',
-  borderTop: '2px solid #eee'
+  borderTop: '2px solid #eee',
+  boxSizing: 'border-box',
+  overflow: 'hidden'
 })
 
 const Operation = styled('div', {
