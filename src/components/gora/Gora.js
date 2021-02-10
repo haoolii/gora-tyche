@@ -4,11 +4,12 @@ import { Layout } from './Layout';
 import { WorkSpace } from './WorkSpace';
 import { Toolbar } from './Toolbar';
 import { motion } from "framer-motion"
+import { v4 as uuidv4 } from 'uuid';
 
 const GoraBase = styled('div', { 
   className: 'gora',
   width: '960px',
-  height: '650px',
+  height: '700px',
   background: '#fff',
   border: '2px solid #E2E2E2',
   overflow: 'hidden',
@@ -18,7 +19,9 @@ const GoraBase = styled('div', {
 const Main = styled('div', {
   position: 'relative',
   width: '960px',
-  height: '600px'
+  height: '600px',
+  borderTop: '3px solid #eee',
+  borderBottom: '3px solid #eee',
 })
 
 const Footer = styled('div', {
@@ -28,11 +31,19 @@ const Footer = styled('div', {
   overflow: 'hidden'
 })
 
+const Header = styled('div', {
+  position: 'relative',
+  width: '960px',
+  height: '50px',
+  overflow: 'hidden'
+})
+
+
 export const Gora = () => {
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState([
     {
-      id: 0,
+      id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
       title: 'Demand discuss',
       start: new Date('2021/01/10'),
       end: new Date('2021/02/25'),
@@ -40,7 +51,7 @@ export const Gora = () => {
       taskColor: null
     },
     {
-      id: 1,
+      id: '65a24b75-ab5b-409b-a6ca-acc133de3684',
       title: 'Analysis and design',
       start: new Date('2021/01/30'),
       end: new Date('2021/03/10'),
@@ -48,7 +59,7 @@ export const Gora = () => {
       taskColor: null
     },
     {
-      id: 2,
+      id: 'a9349099-14b6-416c-8e9e-588fef98856c',
       title: 'Implementation',
       start: new Date('2021/02/20'),
       end: new Date('2021/04/15'),
@@ -63,7 +74,7 @@ export const Gora = () => {
 
   const handleCreate = (event) => {
     setLoading(true);
-    setTasks([...tasks, { ...event.target, id: tasks.length}])
+    setTasks([...tasks, { ...event.target, id: uuidv4()}])
     event.close();
     setTimeout(() => setLoading(false), 500); 
   }
@@ -98,6 +109,9 @@ export const Gora = () => {
       }}
     >
       <GoraBase>
+        <Header>
+        <Toolbar loading={loading} onCreate={handleCreate}/>
+        </Header>
         <Main>
           <Layout />
           <WorkSpace
@@ -109,7 +123,6 @@ export const Gora = () => {
           />
         </Main>
         <Footer>
-          <Toolbar loading={loading} onCreate={handleCreate}/>
         </Footer>
       </GoraBase>
     </motion.div>
