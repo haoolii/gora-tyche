@@ -1,7 +1,11 @@
 import React from 'react'
 import * as d3 from 'd3';
-import './gantt.css';
+import { styled } from 'styletron-react';
 
+const GanttBase = styled('div', {
+  className: 'ganttBase',
+  height: '50px'
+})
 
 export class Gantt extends React.Component {
   constructor(props) {
@@ -21,16 +25,14 @@ export class Gantt extends React.Component {
 
   updateSize() {
     if (this.el.current) {
-      const svgWidth = this.el.current.getBoundingClientRect().width;
       this.setState({
-        svgWidth,
-        scale: this.getScale(svgWidth)
+        svgWidth: this.el.current.getBoundingClientRect().width,
+        scale: this.getScale(this.el.current.getBoundingClientRect().width)
       })
     }
   }
 
   componentDidMount() {
-    window.addEventListener('resize', () => this.updateSize());
     this.updateSize();
 
     d3.select(this.rectEl.current)
@@ -87,9 +89,7 @@ export class Gantt extends React.Component {
     })
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', () => this.updateSize())
-  }
+  componentWillUnmount() {}
 
   componentDidUpdate(preProps, preState) {
     if (preState.scale !== this.state.scale) {
@@ -125,42 +125,46 @@ export class Gantt extends React.Component {
 
   render() {
     return (
-    <div ref={this.el} className="gantt">
+    <GanttBase ref={this.el}>
       <svg
         ref={this.svgEl}
         width={this.state.svgWidth}
         height={50}
         viewBox={`0 0 ${this.state.svgWidth} 50`}
       >
-        <rect 
-          ref={this.rectEl}
-          x={`${this.state.ganttPosition[0]}`}
-          y={`${this.state.ganttPosition[1]}`}
-          cursor="move"
-          width={`${this.state.ganttWidth}`} height="50" fill="red"
-        />
-        <rect
-          className="grabbar"
-          x={`${this.state.ganttPosition[0]}`}
-          y={`${this.state.ganttPosition[1]}`}
-          width="4"
-          fill="blue"
-          height="50"
-          cursor="ew-resize"
-          ref={this.rectLeftEl}
-        />
-        <rect
-        className="grabbar"
-          x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 4}`}
-          y={`${this.state.ganttPosition[1]}`}
-          width="4"
-          cursor="ew-resize"
-          fill="blue"
-          height="50"
-          ref={this.rectRightEl}
-        />
+        <g >
+          <rect
+            ref={this.rectEl}
+            x={`${this.state.ganttPosition[0]}`}
+            y={`${this.state.ganttPosition[1] + 12}`}
+            cursor="move"
+            width={`${this.state.ganttWidth}`} height="26" fill="#FC5656"
+            rx="14"
+          />
+          <rect
+            className="grabbar"
+            x={`${this.state.ganttPosition[0]}`}
+            y={`${this.state.ganttPosition[1] + 12}`}
+            width="8"
+            fillOpacity="0"
+            height="26"
+            cursor="ew-resize"
+            ref={this.rectLeftEl}
+          />
+          <rect
+            className="grabbar"
+            x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 8}`}
+            y={`${this.state.ganttPosition[1] + 12}`}
+            width="8"
+            cursor="ew-resize"
+            fillOpacity="0"
+            height="26"
+            ref={this.rectRightEl}
+
+          />
+        </g>
       </svg>
-    </div>
+    </GanttBase>
     );
   }
 }
