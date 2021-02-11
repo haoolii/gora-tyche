@@ -15,23 +15,46 @@ const Header = styled('div', {
   boxSizing: 'border-box'
 })
 export const Axis = ({
+  rootStart,
+  rootEnd,
   width,
-  height
+  height,
+  type
 }) => {
   const svgEl = useRef();
+  const [tickType, setTickType] = useState('');
   const [axises, setAxises] = useState([]);
   const [bandWidth, setBandWidth] = useState(0);
 
+  useEffect(() => setTickType(type), [type])
+
   useEffect(() => {
     const scale = d3.scaleTime()
-                .domain([new Date('2021/01/01'), new Date('2021/12/31')])
+                .domain([rootStart, rootEnd])
                 .range([0, width])
-    const ticks = scale.ticks(d3.timeMonth.every(1));
+                .nice()
+    let tickFn;
+    let timeFormatFn = d3.timeFormat("%Y/%m");
+
+    if (tickType === 'YEAR') {
+      tickFn = d3.timeYear.every(1);
+      timeFormatFn = d3.timeFormat("%Y");
+    }
+    if (tickType === 'MONTH') {
+      tickFn = d3.timeMonth.every(1);
+      timeFormatFn = d3.timeFormat("%Y/%m");
+    }
+    if (tickType === 'DAY') {
+      tickFn = d3.timeDay.every(1);
+      timeFormatFn = d3.timeFormat("%Y/%m/%d");
+    }
+
+    const ticks = scale.ticks(tickFn);
     setAxises(ticks.map(tick => ({
-      time: d3.timeFormat("%Y/%m")(tick),
+      time: timeFormatFn(tick),
       x: scale(tick)
     })))
-  }, [width]);
+  }, [width, rootStart, rootEnd, tickType]);
 
   useEffect(() => {
     setBandWidth(d3.scaleBand().domain(axises.map(axis => axis.x)).range([0, width]).bandwidth());
@@ -60,9 +83,7 @@ export const Axis = ({
             >
             </line>
             <text x={axis.x + (bandWidth / 2)} y={30} fontSize="12" textAnchor="middle">
-                {axis.time}
-              {/* <LabelSmall>
-              </LabelSmall> */}
+              {axis.time}
             </text>
           </g>
           )

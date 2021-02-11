@@ -14,6 +14,8 @@ const WorkSpaceBase = styled('div', {
 })
 
 export const WorkSpace = ({
+  rootStart,
+  rootEnd,
   tasks,
   setTasks,
   handleChange,
@@ -34,6 +36,8 @@ export const WorkSpace = ({
               <div {...props}>
                 <Task
                   id={value.id}
+                  rootStart={rootStart}
+                  rootEnd={rootEnd}
                   key={value.id}
                   title={value.title}
                   start={value.start}

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from 'styletron-react';
 import {Button, KIND, SIZE, SHAPE } from 'baseui/button';
 import {Plus} from 'baseui/icon';
 import { TaskModal } from './TaskModal';
-import { StatefulButtonGroup, MODE } from 'baseui/button-group';
+import { ButtonGroup, MODE } from 'baseui/button-group';
 import {
   Grab,
   Overflow
@@ -33,9 +33,42 @@ export const Toolbar = ({
   onCreate,
   loading,
   onDownloadPNG,
-  onSetting
+  onSetting,
+  onTypeChange,
+  type
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState();
+  const [selected, setSelected] = useState();
+
+  useEffect(() => {
+    console.log(selected);
+    if (selected === 0) {
+      setSelectedType('DAY');
+    }
+    if (selected === 1) {
+      setSelectedType('MONTH');
+    }
+    if (selected === 2) {
+      setSelectedType('YEAR');
+    }
+  }, [selected])
+
+  useEffect(() => {
+    onTypeChange(selectedType);
+  }, [selectedType])
+
+  useEffect(() => {
+    if (type === 'DAY') {
+      setSelected(0)
+    }
+    if (type === 'MONTH') {
+      setSelected(1)
+    }
+    if (type === 'YEAR') {
+      setSelected(2)
+    }
+  }, [type])
 
   return (
     <>
@@ -50,17 +83,18 @@ export const Toolbar = ({
         >
             Task
         </Button>
-        <div style={{ flex: '1 1 auto'}}></div>
-        <StatefulButtonGroup
+        <div style={{ flex: '1 1 auto'}}></div>    
+        <ButtonGroup
           mode={MODE.radio}
-          initialState={{selected: 0}}
           size={SIZE.compact}
           shape={SHAPE.pill}
+          selected={selected}
+          onClick={(event, index) => setSelected(index)}
         >
           <Button>Day</Button>
           <Button>Month</Button>
           <Button>Year</Button>
-        </StatefulButtonGroup>
+        </ButtonGroup>
 
         <StatefulPopover
           focusLock
@@ -84,8 +118,7 @@ export const Toolbar = ({
             <Overflow color="#707070" size={24}/>
         </Button>
         </StatefulPopover>
-        
-        
+
       </ToolbarBase>
       <TaskModal
         isOpen={isOpen}

@@ -3,14 +3,7 @@ import * as d3 from 'd3';
 import { styled } from 'styletron-react';
 import { motion } from "framer-motion"
 import { twoDateDurationDay } from './utils';
-{/* <motion.div
-  whileHover={{ scale: 1.2, rotate: 90 }}
-  whileTap={{
-    scale: 0.8,
-    rotate: -90,
-    borderRadius: "100%"
-  }}
-/> */}
+
 const GanttBase = styled('div', {
   height: '50px'
 })
@@ -36,7 +29,7 @@ export class Gantt extends React.PureComponent {
     if (this.el.current) {
       this.setState({
         svgWidth: 760,
-        scale: this.getScale(760)
+        scale: this.getScale(760, this.props.rootStart, this.props.rootEnd)
       })
     }
   }
@@ -118,7 +111,17 @@ export class Gantt extends React.PureComponent {
     if (preProps.ganttColor !== this.props.ganttColor) {
       this.updateGantt();
     }
-    
+
+    if (preProps.rootStart !== this.props.rootStart) {
+      this.updateSize();
+      this.updateGantt();
+    }
+
+    if (preProps.rootEnd !== this.props.rootEnd) {
+      this.updateSize();
+      this.updateGantt();
+    }
+
   }
 
   updateGantt() {
@@ -134,9 +137,9 @@ export class Gantt extends React.PureComponent {
     })
   }
 
-  getScale(width) {
+  getScale(width, rootStart, rootEnd) {
     return d3.scaleTime()
-    .domain([new Date('2021/01/01'), new Date('2021/12/31')])
+    .domain([rootStart, rootEnd])
     .range([0, width]);
   }
 

@@ -53,6 +53,9 @@ export const Gora = () => {
   const el = useRef();
   const {enqueue} = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const [type, setType] = useState('MONTH');
+  const [rootStart, setRootStart] = useState(new Date('2021/01/01'));
+  const [rootEnd, setRootEnd] = useState(new Date('2021/12/31'));
   const [title, setTitle] = useState('GORA');
   const [unit, setUnit] = useState(2000);
   const [day, setDay] = useState(0);
@@ -158,16 +161,25 @@ export const Gora = () => {
         <GoraBase>
           <Header>
             <Toolbar 
+              type={type}
               loading={loading}
               onCreate={handleCreate}
               onDownloadPNG={handleDownloadPng}
               onSetting={() => setIsDrawerOpen(true)}
+              onTypeChange={type => setType(type)}
             />
           </Header>
           <Main>
-            <Layout title={title} />
+            <Layout
+              title={title}
+              rootStart={rootStart}
+              rootEnd={rootEnd}
+              type={type}
+            />
             <WorkSpace
               tasks={tasks}
+              rootStart={rootStart}
+              rootEnd={rootEnd}
               setTasks={setTasks}
               handleChange={handleChange}
               handleEdit={handleEdit}
@@ -187,14 +199,18 @@ export const Gora = () => {
         anchor={ANCHOR.right}
       >
         <Setting
-          onSubmit={({ title, unit }) => {
+          onSubmit={({ title, unit, rootStart, rootEnd }) => {
             setTitle(title);
             setUnit(unit);
+            setRootStart(rootStart);
+            setRootEnd(rootEnd);
             setIsDrawerOpen(false)
           }}
           setting={{
             title,
-            unit
+            unit,
+            rootStart,
+            rootEnd
           }}
           onClose={() => setIsDrawerOpen(false)}
         />

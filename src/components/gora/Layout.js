@@ -32,7 +32,10 @@ const Title = styled('div', {
 })
 
 export const Layout = ({
-  title
+  rootStart,
+  rootEnd,
+  title,
+  type
 }) => {
   return (
     <LayoutBase>
@@ -41,7 +44,13 @@ export const Layout = ({
           {title}
         </Title>
       </Info>
-      <Axis width={760} height={600}/>
+      <Axis
+        rootStart={rootStart}
+        rootEnd={rootEnd}
+        width={760}
+        height={600}
+        type={type}
+      />
     </LayoutBase>
   )
 }

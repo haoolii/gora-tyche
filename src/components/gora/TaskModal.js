@@ -13,7 +13,6 @@ import { FormControl } from "baseui/form-control";
 import { Input } from "baseui/input";
 import { DatePicker } from "baseui/datepicker";
 import { ColorPicker } from './ColorPicker';
-import { twoDateDurationDay } from './utils';
 
 export const TaskModal = ({
   task,

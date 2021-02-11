@@ -68,7 +68,9 @@ export const Task = ({
   ganttColor,
   taskColor,
   onEdit,
-  onDelete
+  onDelete,
+  rootStart,
+  rootEnd
 }) => {
   const handleChange = event => {
     onChange({
@@ -101,6 +103,8 @@ export const Task = ({
       <TaskGantt>
         <Gantt
           id={id}
+          rootStart={rootStart}
+          rootEnd={rootEnd}
           start={start}
           end={end}
           days={days}
