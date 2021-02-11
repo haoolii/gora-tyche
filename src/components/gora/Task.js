@@ -63,6 +63,7 @@ export const Task = ({
   title,
   start,
   end,
+  days,
   onChange,
   ganttColor,
   taskColor,
@@ -102,6 +103,7 @@ export const Task = ({
           id={id}
           start={start}
           end={end}
+          days={days}
           onChange={handleChange}
           ganttColor={ganttColor}
         ></Gantt>

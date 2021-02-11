@@ -31,12 +31,14 @@ const Title = styled('div', {
   boxSizing: 'border-box'
 })
 
-export const Layout = () => {
+export const Layout = ({
+  title
+}) => {
   return (
     <LayoutBase>
       <Info>
         <Title>
-          <HeadingXSmall>GORA-PLAN</HeadingXSmall>
+          {title}
         </Title>
       </Info>
       <Axis width={760} height={600}/>

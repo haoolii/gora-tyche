@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: UberMoveMedium, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -9,13 +9,21 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
+}
+
+@font-face {
+  font-family: 'UberMoveBold';
+  src: local('UberMoveBold'), url(./assets/UberMoveBold.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'UberMoveMedium';
+  src: local('UberMoveMedium'), url(./assets/UberMoveMedium.woff) format('woff');
 }
 
 * {
   margin: 0;
   padding: 0;
-  /* box-sizing: border-box; */
   outline: none;
-  /* border: 1px solid black; */
 }

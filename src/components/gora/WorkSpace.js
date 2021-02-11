@@ -38,6 +38,7 @@ export const WorkSpace = ({
                   title={value.title}
                   start={value.start}
                   end={value.end}
+                  days={value.days}
                   onChange={handleChange}
                   onEdit={handleEdit}
                   onDelete={handleDelete}

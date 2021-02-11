@@ -2,6 +2,7 @@ import React from 'react'
 import * as d3 from 'd3';
 import { styled } from 'styletron-react';
 import { motion } from "framer-motion"
+import { twoDateDurationDay } from './utils';
 {/* <motion.div
   whileHover={{ scale: 1.2, rotate: 90 }}
   whileTap={{
@@ -14,7 +15,7 @@ const GanttBase = styled('div', {
   height: '50px'
 })
 
-export class Gantt extends React.Component {
+export class Gantt extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -65,9 +66,11 @@ export class Gantt extends React.Component {
     const { scale } = this.state;
     const duration = end - start;
     const targetX = +d3.select(this.rectEl.current).attr("x") + event.dx;
+    const newStart = scale.invert(targetX);
+    const newEnd = new Date(new Date(scale.invert(targetX)).getTime() + duration);
     onChange({
-      start: scale.invert(targetX),
-      end: new Date(new Date(scale.invert(targetX)).getTime() + duration)
+      start: newStart,
+      end: newEnd
     })
   }
 
@@ -138,6 +141,8 @@ export class Gantt extends React.Component {
   }
 
   render() {
+    const { start, end } = this.props;
+    const days = twoDateDurationDay(start, end);
     return (
       <motion.div
         whileHover={{ opacity: 0.7 }}
@@ -149,7 +154,7 @@ export class Gantt extends React.Component {
             height={50}
             viewBox={`0 0 ${this.state.svgWidth} 50`}
           >
-            <g> 
+            <g>
               <rect
                 ref={this.rectEl}
                 x={`${this.state.ganttPosition[0]}`}
@@ -177,9 +182,9 @@ export class Gantt extends React.Component {
                 fillOpacity="0"
                 height="26"
                 ref={this.rectRightEl}
-
               />
             </g>
+            <text style={{pointerEvents: 'none'}} fontWeight="500" x={`${this.state.ganttPosition[0] + this.state.ganttWidth + 4}`} y="30" cy=".65em">{days}</text>
           </svg>
         </GanttBase>
         </motion.div>

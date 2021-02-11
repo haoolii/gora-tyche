@@ -17,7 +17,13 @@ import { Button } from "baseui/button";
 import { useStyletron, styled } from 'baseui';
 import { Gora } from '../components'
 import { MonoDisplayXSmall } from 'baseui/typography';
-
+import {
+  SnackbarProvider,
+  useSnackbar,
+  DURATION,
+} from 'baseui/snackbar';
+import logo from './logo.svg';
+import { CommingSoon } from './CommingSoon';
 const Footer = styled('div', {
   display: 'flex',
   justifyContent: 'center',
@@ -35,6 +41,7 @@ const LayerContainer = styled('div', {
   maxWidth: '1480px',
   width: '100%',
   margin: '0 auto',
+  overflow: 'hidden'
 })
 
 export const Layout = () => {
@@ -46,22 +53,18 @@ export const Layout = () => {
             maxWidth: '1480px',
             display: 'flex',
             width: '100%',
-            margin: '0 auto'
+            margin: '0 auto',
+            padding: '0 8px'
           })}>
             <StyledNavigationList $align={ALIGN.left}>
               <StyledNavigationItem>
-                <StyledLink $as={Link} to="/">Gora</StyledLink>  
+                <StyledLink $as={Link} to="/"><img src={logo} alt="logo" height="40"/></StyledLink>  
               </StyledNavigationItem>
             </StyledNavigationList>
             <StyledNavigationList $align={ALIGN.center} />
             <StyledNavigationList $align={ALIGN.right}>
               <StyledNavigationItem>
-              <StyledLink $as={Link} to="/about">About</StyledLink>
-              </StyledNavigationItem>
-            </StyledNavigationList>
-            <StyledNavigationList $align={ALIGN.right}>
-              <StyledNavigationItem>
-                <Button>Contact Us</Button>
+                <Button $as={Link} to="/comming-soon">Coming Soon</Button>
               </StyledNavigationItem>
             </StyledNavigationList>
           </div>
@@ -70,23 +73,12 @@ export const Layout = () => {
       <LayerContainer>
         <Switch>
             <Route exact path="/">
-              <Gora />
+              <SnackbarProvider>
+                <Gora />
+              </SnackbarProvider>
             </Route>
-            <Route path="/about">
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <MonoDisplayXSmall marginBottom="scale800">
-                  Gora is a Gantt chart for business.
-                </MonoDisplayXSmall>
-                <MonoDisplayXSmall marginBottom="scale800">
-                  Easy and fast to generate the Gantt chart!!
-                </MonoDisplayXSmall>
-                <MonoDisplayXSmall marginBottom="scale800">
-                  Easy attract customers attention!!
-                </MonoDisplayXSmall>
-              </div>
-            </Route>
-            <Route path="/dashboard">
-            <h1>Dashboard</h1>
+            <Route path="/comming-soon">
+              <CommingSoon />
             </Route>
         </Switch>
       </LayerContainer>

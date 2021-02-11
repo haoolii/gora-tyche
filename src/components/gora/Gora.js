@@ -1,10 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { styled } from 'styletron-react';
 import { Layout } from './Layout';
 import { WorkSpace } from './WorkSpace';
 import { Toolbar } from './Toolbar';
 import { motion } from "framer-motion"
+import { Summary } from './Summary';
 import { v4 as uuidv4 } from 'uuid';
+import { toPng, toBlob } from 'html-to-image';
+import Check from 'baseui/icon/check';
+import {
+  useSnackbar,
+  DURATION,
+} from 'baseui/snackbar';
+import { twoDateDurationDay } from './utils';
+import { Drawer, ANCHOR } from "baseui/drawer";
+import { Setting } from './Setting';
 
 const GoraBase = styled('div', { 
   className: 'gora',
@@ -27,7 +37,7 @@ const Main = styled('div', {
 const Footer = styled('div', {
   position: 'relative',
   width: '960px',
-  height: '50px',
+  height: '45px',
   overflow: 'hidden'
 })
 
@@ -40,7 +50,13 @@ const Header = styled('div', {
 
 
 export const Gora = () => {
+  const el = useRef();
+  const {enqueue} = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState('GORA');
+  const [unit, setUnit] = useState(2000);
+  const [day, setDay] = useState(0);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [tasks, setTasks] = useState([
     {
       id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
@@ -67,6 +83,13 @@ export const Gora = () => {
       taskColor: null
     }
   ]);
+
+  // 計算各task時間
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      setDay(tasks.reduce((acc, curr) => acc + twoDateDurationDay(curr.start, curr.end), 0));
+    })
+  }, [tasks])
 
   const handleChange = (e) => {
     setTasks(tasks.map(task => task.id === e.id ? e : {...task}));
@@ -98,34 +121,85 @@ export const Gora = () => {
     setTimeout(() => setLoading(false), 500); 
   }
 
+  const handleDownloadPng = event => {
+    toPng(el.current)
+      .then(function (dataUrl) {
+        enqueue({
+          message: 'Download Success!!',
+          startEnhancer: ({size}) => <Check size={size} />
+        }, DURATION.medium)
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'Gora';
+        a.click();
+      })
+      .catch(function (error) {
+        console.error('oops, something went wrong!', error);
+      });
+  }
+
+  const handleSetting = event => {
+    setIsDrawerOpen(true);
+    console.log('handleSetting', event);
+  }
+
   return (
-    <motion.div 
-      initial={{ rotate: 90, scale: 0 }}
-      animate={{ rotate: 0, scale: 1 }}
-      transition={{
-        type: "spring",
-        stiffness: 260,
-        damping: 20
-      }}
-    >
-      <GoraBase>
-        <Header>
-        <Toolbar loading={loading} onCreate={handleCreate}/>
-        </Header>
-        <Main>
-          <Layout />
-          <WorkSpace
-            tasks={tasks}
-            setTasks={setTasks}
-            handleChange={handleChange}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-          />
-        </Main>
-        <Footer>
-        </Footer>
-      </GoraBase>
-    </motion.div>
+    <>
+      <motion.div
+        ref={el}
+        initial={{ rotate: 90, scale: 0 }}
+        animate={{ rotate: 0, scale: 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 20
+        }}
+      >
+        <GoraBase>
+          <Header>
+            <Toolbar 
+              loading={loading}
+              onCreate={handleCreate}
+              onDownloadPNG={handleDownloadPng}
+              onSetting={() => setIsDrawerOpen(true)}
+            />
+          </Header>
+          <Main>
+            <Layout title={title} />
+            <WorkSpace
+              tasks={tasks}
+              setTasks={setTasks}
+              handleChange={handleChange}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+            />
+          </Main>
+          <Footer>
+            <Summary day={day} unit={unit} />
+          </Footer>
+        </GoraBase>
+      </motion.div>
+
+      <Drawer
+        isOpen={isDrawerOpen}
+        autoFocus
+        onClose={() => setIsDrawerOpen(false)}
+        anchor={ANCHOR.right}
+      >
+        <Setting
+          onSubmit={({ title, unit }) => {
+            setTitle(title);
+            setUnit(unit);
+            setIsDrawerOpen(false)
+          }}
+          setting={{
+            title,
+            unit
+          }}
+          onClose={() => setIsDrawerOpen(false)}
+        />
+      </Drawer>
+    </>
   )
 }
 
