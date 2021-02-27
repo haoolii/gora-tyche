@@ -1,196 +1,157 @@
-import React from 'react'
+import React, {
+  useRef,
+  memo,
+  useLayoutEffect,
+  useState,
+  useEffect
+} from 'react';
 import * as d3 from 'd3';
 import { styled } from 'styletron-react';
-import { motion } from "framer-motion"
-import { twoDateDurationDay } from './utils';
+import { motion } from 'framer-motion';
+import { useEventCall, throttle, twoDateDurationDay } from './utils';
+
+const getScale = (width, rootStart, rootEnd) => {
+  return d3.scaleTime().domain([rootStart, rootEnd]).range([0, width]);
+};
 
 const GanttBase = styled('div', {
   height: '50px'
-})
+});
 
-export class Gantt extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      svgWidth: 0,
-      ganttWidth: 0,
-      ganttPosition: [0, 0],
-      scale: () => {},
-      ganttColor: props.ganttColor ? props.ganttColor : '#333333'
-    }
-    this.el = React.createRef();
-    this.svgEl = React.createRef();
-    this.rectEl = React.createRef();
-    this.rectLeftEl = React.createRef();
-    this.rectRightEl = React.createRef();
-  }
+const svgWidth = 760;
+const whileHover = { opacity: 0.7 };
+const whileTap = { opacity: 0.7 };
+export const Gantt = memo(
+  ({ ganttColor = '#333333', start, end, rootStart, rootEnd, onChange }) => {
+    const el = useRef();
+    const svgEl = useRef();
+    const rectEl = useRef();
+    const rectLeftEl = useRef();
+    const rectRightEl = useRef();
 
-  updateSize() {
-    if (this.el.current) {
-      this.setState({
-        svgWidth: 760,
-        scale: this.getScale(760, this.props.rootStart, this.props.rootEnd)
-      })
-    }
-  }
+    const [ganttWidth, setGanttWidth] = useState(0);
+    const scaleRef = useRef(() => {});
+    const [ganttPosition, setGanttPosition] = useState([0, 0]);
+    // [scale(start), 0]
+    // Math.abs(scale(end) - scale(start));
 
-  componentDidMount() {
-    this.updateSize();
-
-    d3.select(this.rectEl.current)
-      .call(
-        d3.drag()
-          .on('drag', event => this.drag(event))
-      )
-    d3.select(this.rectLeftEl.current)
-      .call(
-        d3.drag()
-          .on('drag', event => this.grabLeftdrag(event))
-      )
-    d3.select(this.rectRightEl.current)
-      .call(
-        d3.drag()
-          .on('drag', event => this.grabRightdrag(event))
-      )
-  }
-
-  drag(event) {
-    const { start, end, onChange } = this.props;
-    const { scale } = this.state;
-    const duration = end - start;
-    const targetX = +d3.select(this.rectEl.current).attr("x") + event.dx;
-    const newStart = scale.invert(targetX);
-    const newEnd = new Date(new Date(scale.invert(targetX)).getTime() + duration);
-    onChange({
-      start: newStart,
-      end: newEnd
-    })
-  }
-
-  grabLeftdrag(event) {
-    const { end, onChange } = this.props;
-    const { scale } = this.state;
-    const newStart = scale.invert(event.x);
-
-    if (scale(end) - scale(newStart) < 10) return;
-
-    onChange({
-      start: newStart,
-      end: end
-    })
-  }
-
-  grabRightdrag(event) {
-    const { start, onChange } = this.props;
-    const { scale } = this.state;
-    const newEnd = scale.invert(event.x);
-
-    if (scale(newEnd) - scale(start) < 10) return;
-
-    onChange({
-      start: start,
-      end: scale.invert(event.x)
-    })
-  }
-
-  componentWillUnmount() {}
-
-  componentDidUpdate(preProps, preState) {
-    if (preState.scale !== this.state.scale) {
-      this.updateGantt();
-    }
-
-    if (preProps.start !== this.props.start) {
-      this.updateGantt();
-    }
-
-    if (preProps.end !== this.props.end) {
-      this.updateGantt();
-    }
-
-    if (preProps.ganttColor !== this.props.ganttColor) {
-      this.updateGantt();
-    }
-
-    if (preProps.rootStart !== this.props.rootStart) {
-      this.updateSize();
-      this.updateGantt();
-    }
-
-    if (preProps.rootEnd !== this.props.rootEnd) {
-      this.updateSize();
-      this.updateGantt();
-    }
-
-  }
-
-  updateGantt() {
-    const { scale } = this.state;
-    const { start, end, ganttColor } = this.props;
-    this.setState({
-      ganttPosition: [
-        scale(this.props.start),
-        0
-      ],
-      ganttWidth: Math.abs(scale(end) - scale(start)),
-      ganttColor
-    })
-  }
-
-  getScale(width, rootStart, rootEnd) {
-    return d3.scaleTime()
-    .domain([rootStart, rootEnd])
-    .range([0, width]);
-  }
-
-  render() {
-    const { start, end } = this.props;
     const days = twoDateDurationDay(start, end);
+
+    const handleDrag = useEventCall(
+      throttle((event) => {
+        const { current: scale } = scaleRef;
+        const duration = end - start;
+        const targetX = +d3.select(rectEl.current).attr('x') + event.dx;
+        const newStart = scale.invert(targetX);
+        const newEnd = new Date(
+          new Date(scale.invert(targetX)).getTime() + duration
+        );
+        onChange({
+          start: newStart,
+          end: newEnd
+        });
+      })
+    );
+
+    const handleGrabLeftDrag = useEventCall(
+      throttle((event) => {
+        const { current: scale } = scaleRef;
+        const newStart = scale.invert(event.x);
+        if (scale(end) - scale(newStart) < 10) return;
+
+        onChange({
+          start: newStart,
+          end: end
+        });
+      })
+    );
+
+    const handleGrabRightDrag = useEventCall(
+      throttle((event) => {
+        const { current: scale } = scaleRef;
+        const newEnd = scale.invert(event.x);
+
+        if (scale(newEnd) - scale(start) < 10) return;
+
+        onChange({
+          start: start,
+          end: scale.invert(event.x)
+        });
+      })
+    );
+
+    useLayoutEffect(() => {
+      d3.select(rectEl.current).call(
+        d3.drag().on('drag', (event) => handleDrag(event))
+      );
+      d3.select(rectLeftEl.current).call(
+        d3.drag().on('drag', (event) => handleGrabLeftDrag(event))
+      );
+      d3.select(rectRightEl.current).call(
+        d3.drag().on('drag', (event) => handleGrabRightDrag(event))
+      );
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+      const scale = (scaleRef.current = getScale(svgWidth, rootStart, rootEnd));
+      setGanttPosition([scale(start), 0]);
+      setGanttWidth(Math.abs(scale(end) - scale(start)));
+    }, [start, end, ganttColor, rootStart, rootEnd]);
+
     return (
-      <motion.div
-        whileHover={{ opacity: 0.7 }}
-        whileTap={{ opacity: 0.7 }}>
-        <GanttBase ref={this.el}>
+      <motion.div whileHover={whileHover} whileTap={whileTap}>
+        <GanttBase ref={el}>
           <svg
-            ref={this.svgEl}
-            width={this.state.svgWidth}
+            ref={svgEl}
+            width={svgWidth}
             height={50}
-            viewBox={`0 0 ${this.state.svgWidth} 50`}
+            viewBox={`0 0 ${svgWidth} 50`}
           >
             <g>
               <rect
-                ref={this.rectEl}
-                x={`${this.state.ganttPosition[0]}`}
-                y={`${this.state.ganttPosition[1] + 12}`}
+                ref={rectEl}
+                x={`${ganttPosition[0]}`}
+                y={`${ganttPosition[1] + 12}`}
                 cursor="move"
-                width={`${this.state.ganttWidth}`} height="26" fill={this.state.ganttColor}
+                width={`${ganttWidth}`}
+                height="26"
+                fill={ganttColor}
                 rx="14"
               />
               <rect
                 className="grabbar"
-                x={`${this.state.ganttPosition[0]}`}
-                y={`${this.state.ganttPosition[1] + 12}`}
+                x={`${ganttPosition[0]}`}
+                y={`${ganttPosition[1] + 12}`}
                 width="8"
                 fillOpacity="0"
                 height="26"
                 cursor="ew-resize"
-                ref={this.rectLeftEl}
+                ref={rectLeftEl}
               />
               <rect
                 className="grabbar"
-                x={`${this.state.ganttPosition[0] + this.state.ganttWidth - 8}`}
-                y={`${this.state.ganttPosition[1] + 12}`}
+                x={`${ganttPosition[0] + ganttWidth - 8}`}
+                y={`${ganttPosition[1] + 12}`}
                 width="8"
                 cursor="ew-resize"
                 fillOpacity="0"
                 height="26"
-                ref={this.rectRightEl}
+                ref={rectRightEl}
               />
             </g>
-            <text style={{pointerEvents: 'none'}} fontWeight="500" x={`${this.state.ganttPosition[0] + this.state.ganttWidth + 4}`} y="30" cy=".65em">{days}</text>
+            <text
+              style={{ pointerEvents: 'none' }}
+              fontWeight="500"
+              x={`${ganttPosition[0] + ganttWidth + 4}`}
+              y="30"
+              cy=".65em"
+            >
+              {days}
+            </text>
           </svg>
         </GanttBase>
-        </motion.div>
+      </motion.div>
     );
   }
-}
+);
