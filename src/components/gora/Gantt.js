@@ -24,24 +24,24 @@ const whileTap = { opacity: 0.7 };
 export const Gantt = memo(
   ({ ganttColor = '#333333', start, end, rootStart, rootEnd, onChange }) => {
     const el = useRef();
-    const svgEl = useRef();
-    const rectEl = useRef();
-    const rectLeftEl = useRef();
-    const rectRightEl = useRef();
+    const textRef = useRef();
+    const svgRef = useRef();
+    const rectRef = useRef();
+    const rectLeftRef = useRef();
+    const rectRightRef = useRef();
+
+    const scaleRef = useRef(() => {});
 
     const [ganttWidth, setGanttWidth] = useState(0);
-    const scaleRef = useRef(() => {});
     const [ganttPosition, setGanttPosition] = useState([0, 0]);
-    // [scale(start), 0]
-    // Math.abs(scale(end) - scale(start));
 
     const days = twoDateDurationDay(start, end);
-
+    
     const handleDrag = useEventCall(
       throttle((event) => {
         const { current: scale } = scaleRef;
         const duration = end - start;
-        const targetX = +d3.select(rectEl.current).attr('x') + event.dx;
+        const targetX = +d3.select(rectRef.current).attr('x') + event.dx;
         const newStart = scale.invert(targetX);
         const newEnd = new Date(
           new Date(scale.invert(targetX)).getTime() + duration
@@ -81,13 +81,13 @@ export const Gantt = memo(
     );
 
     useLayoutEffect(() => {
-      d3.select(rectEl.current).call(
+      d3.select(rectRef.current).call(
         d3.drag().on('drag', (event) => handleDrag(event))
       );
-      d3.select(rectLeftEl.current).call(
+      d3.select(rectLeftRef.current).call(
         d3.drag().on('drag', (event) => handleGrabLeftDrag(event))
       );
-      d3.select(rectRightEl.current).call(
+      d3.select(rectRightRef.current).call(
         d3.drag().on('drag', (event) => handleGrabRightDrag(event))
       );
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,14 +103,14 @@ export const Gantt = memo(
       <motion.div whileHover={whileHover} whileTap={whileTap}>
         <GanttBase ref={el}>
           <svg
-            ref={svgEl}
+            ref={svgRef}
             width={svgWidth}
             height={50}
             viewBox={`0 0 ${svgWidth} 50`}
           >
             <g>
               <rect
-                ref={rectEl}
+                ref={rectRef}
                 x={`${ganttPosition[0]}`}
                 y={`${ganttPosition[1] + 12}`}
                 cursor="move"
@@ -120,6 +120,7 @@ export const Gantt = memo(
                 rx="14"
               />
               <rect
+                ref={rectLeftRef}
                 className="grabbar"
                 x={`${ganttPosition[0]}`}
                 y={`${ganttPosition[1] + 12}`}
@@ -127,9 +128,9 @@ export const Gantt = memo(
                 fillOpacity="0"
                 height="26"
                 cursor="ew-resize"
-                ref={rectLeftEl}
               />
               <rect
+                ref={rectRightRef}
                 className="grabbar"
                 x={`${ganttPosition[0] + ganttWidth - 8}`}
                 y={`${ganttPosition[1] + 12}`}
@@ -137,10 +138,10 @@ export const Gantt = memo(
                 cursor="ew-resize"
                 fillOpacity="0"
                 height="26"
-                ref={rectRightEl}
               />
             </g>
             <text
+              ref={textRef}
               style={{ pointerEvents: 'none' }}
               fontWeight="500"
               x={`${ganttPosition[0] + ganttWidth + 4}`}

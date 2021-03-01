@@ -87,31 +87,28 @@ export const Gora = () => {
 
   // 計算各task時間
   useEffect(() => {
-    Promise.resolve().then(() => {
-      setDay(
-        tasks.reduce(
-          (acc, curr) => acc + twoDateDurationDay(curr.start, curr.end),
-          0
-        )
-      );
-    });
+    setDay(
+      tasks.reduce(
+        (acc, curr) => acc + twoDateDurationDay(curr.start, curr.end),
+        0
+      )
+    );
   }, [tasks]);
 
-  const handleChange = useEventCall((e) => {
+  const handleChange = (e) => {
     setTasks(tasks.map((task) => (task.id === e.id ? e : { ...task })));
-  });
+  };
 
   const handleChangeType = useEventCall((type) => {
-    console.log('handleChangeType');
     setType(type);
   });
 
-  const handleCreate = (event) => {
+  const handleCreate = useEventCall((event) => {
     setLoading(true);
     setTasks([...tasks, { ...event.target, id: uuidv4() }]);
     event.close();
     setTimeout(() => setLoading(false), 500);
-  };
+  });
 
   const handleEdit = (event) => {
     setLoading(true);
@@ -127,8 +124,6 @@ export const Gora = () => {
     setTimeout(() => setLoading(false), 500);
   };
 
-  console.log('gora js');
-
   const handleDelete = (event) => {
     setLoading(true);
     setTasks(tasks.filter((task) => task.id !== event.target.id));
@@ -136,7 +131,7 @@ export const Gora = () => {
     setTimeout(() => setLoading(false), 500);
   };
 
-  const handleDownloadPng = (event) => {
+  const handleDownloadPng = useEventCall((event) => {
     toPng(el.current)
       .then(function (dataUrl) {
         enqueue(
@@ -154,7 +149,9 @@ export const Gora = () => {
       .catch(function (error) {
         console.error('oops, something went wrong!', error);
       });
-  };
+  });
+
+  const handleSetting = useEventCall(() => setIsDrawerOpen(true));
 
   return (
     <>
@@ -175,7 +172,7 @@ export const Gora = () => {
               loading={loading}
               onCreate={handleCreate}
               onDownloadPNG={handleDownloadPng}
-              onSetting={() => setIsDrawerOpen(true)}
+              onSetting={handleSetting}
               onTypeChange={handleChangeType}
             />
           </Header>

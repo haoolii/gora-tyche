@@ -1,14 +1,12 @@
 import { zip } from 'ramda';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { styled } from 'styletron-react';
 import { Gantt } from './Gantt';
-import {
-  Grab,
-  Overflow
-} from 'baseui/icon';
+import { Grab, Overflow } from 'baseui/icon';
 import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
 import { LabelMedium, LabelSmall } from 'baseui/typography';
 import { TaskModal } from './TaskModal';
+import { useEventCall } from './utils';
 
 const TaskBase = styled('div', {
   className: 'task',
@@ -18,7 +16,7 @@ const TaskBase = styled('div', {
   borderTop: '1px solid #eee',
   borderBottom: '1px solid #eee',
   zIndex: -1
-})
+});
 
 const TaskInfo = styled('div', {
   className: 'taskInfo',
@@ -28,26 +26,26 @@ const TaskInfo = styled('div', {
   display: 'flex',
   alignItems: 'center',
   marginRight: '2px'
-})
+});
 
 const TaskGrab = styled('div', {
   padding: '0 12px',
   cursor: 'grabbing'
-})
+});
 
 const TaskTitle = styled('div', {
   width: '100%'
-})
+});
 
-const TaskMore = styled('div')
+const TaskMore = styled('div');
 
 const TaskGantt = styled('div', {
   className: 'taskGantt',
   width: '760px',
   height: '50px'
-})
+});
 
-const TaskColor = styled('div', props => ({
+const TaskColor = styled('div', (props) => ({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -56,7 +54,7 @@ const TaskColor = styled('div', props => ({
   width: '100%',
   height: '100%',
   zIndex: -1
-}))
+}));
 
 export const Task = ({
   id,
@@ -72,49 +70,54 @@ export const Task = ({
   rootStart,
   rootEnd
 }) => {
-  const handleChange = event => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleChange = useEventCall((event) => {
     onChange({
       id,
       title,
       ganttColor,
       taskColor,
       ...event
-    })
-  }
-  const [isOpen, setIsOpen] = useState(false);
+    });
+  });
+  
   return (
     <>
-    <TaskBase>
-      <TaskInfo>
-        <TaskGrab data-movable-handle>
-          <Grab color="#707070" size={16}/>
-        </TaskGrab>
-        <TaskTitle>
-          <LabelSmall>
-            {title}
-          </LabelSmall>
-        </TaskTitle>
-        <TaskMore>
-          <Button kind={KIND.minimal} size={SIZE.compact} shape={SHAPE.circle} onClick={() => setIsOpen(true)}>
-            <Overflow color="#707070" size={16}/>
-          </Button>
-        </TaskMore>
-      </TaskInfo>
-      <TaskGantt>
-        <Gantt
-          id={id}
-          rootStart={rootStart}
-          rootEnd={rootEnd}
-          start={start}
-          end={end}
-          days={days}
-          onChange={handleChange}
-          ganttColor={ganttColor}
-        ></Gantt>
-      </TaskGantt>
-      <TaskColor $taskColor={taskColor}></TaskColor>
-    </TaskBase>
-    <TaskModal
+      <TaskBase>
+        <TaskInfo>
+          <TaskGrab data-movable-handle>
+            <Grab color="#707070" size={16} />
+          </TaskGrab>
+          <TaskTitle>
+            <LabelSmall>{title}</LabelSmall>
+          </TaskTitle>
+          <TaskMore>
+            <Button
+              kind={KIND.minimal}
+              size={SIZE.compact}
+              shape={SHAPE.circle}
+              onClick={() => setIsOpen(true)}
+            >
+              <Overflow color="#707070" size={16} />
+            </Button>
+          </TaskMore>
+        </TaskInfo>
+        <TaskGantt>
+          <Gantt
+            id={id}
+            rootStart={rootStart}
+            rootEnd={rootEnd}
+            start={start}
+            end={end}
+            days={days}
+            onChange={handleChange}
+            ganttColor={ganttColor}
+          ></Gantt>
+        </TaskGantt>
+        <TaskColor $taskColor={taskColor}></TaskColor>
+      </TaskBase>
+      <TaskModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         onSubmit={onEdit}
@@ -126,10 +129,9 @@ export const Task = ({
           end,
           onChange,
           ganttColor,
-          taskColor,
+          taskColor
         }}
       />
     </>
-  )
-}
-
+  );
+};
